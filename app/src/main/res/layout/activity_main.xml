@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.fourway.insecurestorageofencryptionkeys.MainActivity"
+    tools:layout_editor_absoluteY="81dp">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="1">
+
+        <TableRow android:layout_margin="16dp">
+
+            <TextView
+                android:layout_gravity="center"
+                android:padding="3dip"
+                android:text="Plain Text :" />
+
+            <EditText
+                android:id="@+id/plain_et"
+                android:layout_gravity="center"
+                android:hint="write something"
+                android:textSize="14sp" />
+        </TableRow>
+
+
+        <Button
+            android:id="@+id/encryption_btn"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="Encrypt and save" />
+
+
+        <TableRow android:layout_margin="16dp">
+
+            <TextView
+                android:layout_gravity="center"
+                android:padding="3dip"
+                android:text="Encrypted Text :" />
+
+            <TextView
+                android:id="@+id/encrypted_tv"
+                android:layout_gravity="center"
+                android:ems="10"
+                android:padding="3dip" />
+        </TableRow>
+
+
+        <Button
+            android:id="@+id/decryption_btn"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="Retrieve and Decrypt" />
+
+
+        <TableRow android:layout_margin="16dp">
+
+            <TextView
+                android:layout_gravity="center"
+                android:padding="3dip"
+                android:text="Decrypted Text :" />
+
+            <TextView
+                android:id="@+id/decrypted_tv"
+                android:layout_gravity="center"
+                android:ems="10"
+                android:padding="3dip" />
+        </TableRow>
+
+
+        <Button
+            android:id="@+id/clear_btn"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="Clear all" />
+
+
+    </TableLayout>
+
+</android.support.constraint.ConstraintLayout>

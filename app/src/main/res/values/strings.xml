@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Insecure Storage of Encryption Keys</string>
+
+    <string name="pref_name">dataPrefKey</string>
+    <string name="encrypted_data">dataKey</string>
+    <string name="encrypted_key">encrypted_key</string>
+</resources>
