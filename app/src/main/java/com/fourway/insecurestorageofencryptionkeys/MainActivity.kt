@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.content.SharedPreferences
+import android.security.keystore.KeyProperties
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -158,6 +159,6 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun getHardcoded() : Key {
-        return SecretKeySpec(SECRETE_KEY.toByteArray(), SecurityConstants.ALGORITHM_AES)
+        return SecretKeySpec(SECRETE_KEY.toByteArray(), SecurityConstants.KEY_ALGORITHM_AES)
     }
 }

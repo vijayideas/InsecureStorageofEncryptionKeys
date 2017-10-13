@@ -14,6 +14,6 @@ object SecurityConstants {
     val TYPE_DSA = "DSA"
     val TYPE_BKS = "BKS"
 
-    val ALGORITHM_AES = "AES"
+    val KEY_ALGORITHM_AES = "AES"
 
 }
