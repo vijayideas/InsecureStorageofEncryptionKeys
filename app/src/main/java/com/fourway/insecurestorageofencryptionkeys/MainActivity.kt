@@ -169,7 +169,7 @@ class MainActivity : AppCompatActivity() {
             keyStore.load(null)*/
 
             // Generate the RSA key pairs
-            if (!keyStore.containsAlias(SecurityConstants.SAMPLE_ALIAS)) {
+            if (!keyStore.containsAlias(alias)) {
 
                 // Generate a key pair for encryption
                 val start = Calendar.getInstance()
@@ -177,8 +177,8 @@ class MainActivity : AppCompatActivity() {
                 end.add(Calendar.YEAR, 30)
 
                 val spec = KeyPairGeneratorSpec.Builder(this)
-                        .setAlias(SecurityConstants.SAMPLE_ALIAS)
-                        .setSubject(X500Principal("CN=" + SecurityConstants.SAMPLE_ALIAS))
+                        .setAlias(alias)
+                        .setSubject(X500Principal("CN=" + alias))
                         .setSerialNumber(BigInteger.TEN)
                         .setStartDate(start.time)
                         .setEndDate(end.time)
