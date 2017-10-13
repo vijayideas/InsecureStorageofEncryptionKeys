@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         try {
             val valueBytes = Base64.decode(encryptedText, Base64.DEFAULT)
             return decryptor
-                    .decryptData(getHardcoded(), valueBytes, FIXED_IV.toByteArray())
+                    .decryptData(getSecreteKey(getString(R.string.my_secrete_key)), valueBytes, FIXED_IV.toByteArray())
         } catch (e: Exception) {
             Log.e(TAG, "decryptData() called with: " + e.message, e)
         }
@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity() {
 
         try {
             val encryptedText = encryptor
-                    .encryptText(getHardcoded(), plainText, FIXED_IV.toByteArray())
+                    .encryptText(getSecreteKey(getString(R.string.my_secrete_key)), plainText, FIXED_IV.toByteArray())
             return Base64.encodeToString(encryptedText, Base64.DEFAULT)
 
         } catch (e: Exception) {
@@ -151,13 +151,11 @@ class MainActivity : AppCompatActivity() {
 
         private val FIXED_IV = "0123456789ab" //The IV you use in the encryption must be the same one you use in the decryption
 
-        private val SECRETE_KEY = "my_secrete_key12"
-
     }
 
 
 
-    private fun getHardcoded() : Key {
-        return SecretKeySpec(SECRETE_KEY.toByteArray(), SecurityConstants.ALGORITHM_AES)
+    private fun getSecreteKey(secreteKey: String) : Key {
+        return SecretKeySpec(secreteKey.toByteArray(), SecurityConstants.ALGORITHM_AES)
     }
 }

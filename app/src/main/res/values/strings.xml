@@ -4,4 +4,5 @@
     <string name="pref_name">dataPrefKey</string>
     <string name="encrypted_data">dataKey</string>
     <string name="encrypted_key">encrypted_key</string>
+    <string name="my_secrete_key">my_secrete_key12</string>
 </resources>
