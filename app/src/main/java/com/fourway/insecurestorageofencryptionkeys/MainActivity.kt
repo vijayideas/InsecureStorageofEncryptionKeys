@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun clearAll() {
         val dataEditor = pref.edit()
-        dataEditor.clear()
+        dataEditor.putString(getString(R.string.encrypted_data), null)
         dataEditor.apply()
 
 
@@ -273,7 +273,7 @@ class MainActivity : AppCompatActivity() {
 
         if (encryptedKeyB64 == null) {
 
-            val key = ByteArray(16)
+            val key = ByteArray(32)
 
             val secureRandom = SecureRandom()
             secureRandom.nextBytes(key)
