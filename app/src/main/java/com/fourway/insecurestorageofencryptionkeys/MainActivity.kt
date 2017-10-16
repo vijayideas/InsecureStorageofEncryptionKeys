@@ -153,7 +153,22 @@ class MainActivity : AppCompatActivity() {
     private fun generateSecretKey(): Key {
 
 
-        generateAndStoreRsaKey()
+        var encryptedKeyB64 = pref.getString(getString(R.string.encrypted_key), null)
+
+        if (encryptedKeyB64 == null) {
+
+            val key = ByteArray(32)
+
+            val secureRandom = SecureRandom()
+            secureRandom.nextBytes(key)
+
+
+            encryptedKeyB64 = Base64.encodeToString(key, Base64.DEFAULT)
+
+            val edit = pref.edit()
+            edit.putString(getString(R.string.encrypted_key), encryptedKeyB64)
+            edit.apply()
+        }
 
         return getSecretKey()
 
@@ -182,30 +197,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    private fun generateAndStoreRsaKey() {
-
-        var encryptedKeyB64 = pref.getString(getString(R.string.encrypted_key), null)
-
-        if (encryptedKeyB64 == null) {
-
-            val key = ByteArray(32)
-
-            val secureRandom = SecureRandom()
-            secureRandom.nextBytes(key)
-
-
-            encryptedKeyB64 = Base64.encodeToString(key, Base64.DEFAULT)
-
-            val edit = pref.edit()
-            edit.putString(getString(R.string.encrypted_key), encryptedKeyB64)
-            edit.apply()
-        }
-    }
-
-
-
-
-
     companion object {
         private val TAG = MainActivity::class.java.simpleName
 
@@ -214,11 +205,6 @@ class MainActivity : AppCompatActivity() {
 //        private val SECRETE_KEY = "my_secrete_keyhu"
 
     }
-
-
-
-
-
 
 
 
