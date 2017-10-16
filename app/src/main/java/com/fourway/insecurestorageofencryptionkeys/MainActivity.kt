@@ -238,7 +238,7 @@ class MainActivity : AppCompatActivity() {
 
 
     /**
-     * for key encryption
+     * for RSA key encryption
      */
     @Throws(Exception::class)
     private fun rsaEncrypt(secret: ByteArray): ByteArray {
@@ -254,7 +254,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * for key decryption
+     * for RSA key decryption
      */
     @Throws(Exception::class)
     private fun rsaDecrypt(encrypted: ByteArray): ByteArray {
