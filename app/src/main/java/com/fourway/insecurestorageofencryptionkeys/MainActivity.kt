@@ -5,9 +5,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.content.SharedPreferences
-import android.os.Build
-import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyProperties
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -133,7 +130,7 @@ class MainActivity : AppCompatActivity() {
         try {
             val valueBytes = Base64.decode(encryptedText, Base64.DEFAULT)
             return decryptor
-                    .decryptData(getSecretKey(SecurityConstants.SAMPLE_ALIAS), valueBytes, FIXED_IV.toByteArray())
+                    .decryptData(getSecretKey(), valueBytes, FIXED_IV.toByteArray())
         } catch (e: Exception) {
             Log.e(TAG, "decryptText() called with: " + e.message, e)
         }
@@ -163,55 +160,34 @@ class MainActivity : AppCompatActivity() {
     @Throws(NoSuchAlgorithmException::class, NoSuchProviderException::class, InvalidAlgorithmParameterException::class)
     private fun generateSecretKey(alias: String): Key {
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
 
-            /*val keyStore: KeyStore = KeyStore.getInstance(SecurityConstants.ANDROID_KEY_STORE)
-            keyStore.load(null)*/
+        // Generate the RSA key pairs
+        if (!keyStore.containsAlias(alias)) {
 
-            // Generate the RSA key pairs
-            if (!keyStore.containsAlias(alias)) {
+            // Generate a key pair for encryption
+            val start = Calendar.getInstance()
+            val end = Calendar.getInstance()
+            end.add(Calendar.YEAR, 30)
 
-                // Generate a key pair for encryption
-                val start = Calendar.getInstance()
-                val end = Calendar.getInstance()
-                end.add(Calendar.YEAR, 30)
+            val spec = KeyPairGeneratorSpec.Builder(this)
+                    .setAlias(alias)
+                    .setSubject(X500Principal("CN=" + alias))
+                    .setSerialNumber(BigInteger.TEN)
+                    .setStartDate(start.time)
+                    .setEndDate(end.time)
+                    .build()
 
-                val spec = KeyPairGeneratorSpec.Builder(this)
-                        .setAlias(alias)
-                        .setSubject(X500Principal("CN=" + alias))
-                        .setSerialNumber(BigInteger.TEN)
-                        .setStartDate(start.time)
-                        .setEndDate(end.time)
-                        .build()
-
-                val kpg = KeyPairGenerator.getInstance(SecurityConstants.TYPE_RSA, SecurityConstants.ANDROID_KEY_STORE)
-                kpg.initialize(spec)
-                kpg.generateKeyPair()
+            val kpg = KeyPairGenerator.getInstance(SecurityConstants.TYPE_RSA, SecurityConstants.ANDROID_KEY_STORE)
+            kpg.initialize(spec)
+            kpg.generateKeyPair()
 
 
-                //Generate and Store the AES Key
-                generateAndStoreRsaKey()
+            //Generate and Store the AES Key in Preferences
+            generateAndStoreRsaKey()
 
-            }
-
-            return getSecretKey(SecurityConstants.SAMPLE_ALIAS)
-
-        }else{
-
-            val keyGenerator:KeyGenerator = KeyGenerator
-                    .getInstance(KeyProperties.KEY_ALGORITHM_AES, SecurityConstants.ANDROID_KEY_STORE)
-
-
-
-            keyGenerator.init(KeyGenParameterSpec.Builder(alias,
-                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
-                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                    .setRandomizedEncryptionRequired(false)
-                    .build())
-
-            return keyGenerator.generateKey()
         }
+
+        return getSecretKey()
 
 
 
@@ -219,42 +195,18 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    /*@Throws(NoSuchAlgorithmException::class, NoSuchProviderException::class, InvalidAlgorithmParameterException::class)
-    private fun generateSecretKey(alias: String): SecretKey {
-
-        val keyGenerator = KeyGenerator
-                .getInstance(KeyProperties.KEY_ALGORITHM_AES, MainActivity.ANDROID_KEY_STORE)
-
-
-
-        keyGenerator.init(KeyGenParameterSpec.Builder(alias,
-                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
-                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                .setRandomizedEncryptionRequired(false)
-                .build())
-
-        return keyGenerator.generateKey()
-    }*/
 
     @Throws(NoSuchAlgorithmException::class, UnrecoverableEntryException::class, KeyStoreException::class)
-    private fun getSecretKey(alias: String): SecretKey {
+    private fun getSecretKey(): SecretKey {
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        val encryptedKeyB64 = pref.getString(getString(R.string.encrypted_key), null)
 
-            val encryptedKeyB64 = pref.getString(getString(R.string.encrypted_key), null)
-
-            val encryptedKey = Base64.decode(encryptedKeyB64, Base64.DEFAULT)
-            val key = rsaDecrypt(encryptedKey)
+        val encryptedKey = Base64.decode(encryptedKeyB64, Base64.DEFAULT)
+        val key = rsaDecrypt(encryptedKey)
 
 
-            return SecretKeySpec(key, "AES")
-        }
+        return SecretKeySpec(key, "AES")
 
-        /*val keyStore: KeyStore = KeyStore.getInstance(SecurityConstants.ANDROID_KEY_STORE)
-        keyStore.load(null)*/
-
-        return (keyStore.getEntry(alias, null) as KeyStore.SecretKeyEntry).secretKey
     }
 
 
@@ -262,10 +214,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
-
-
-    /**Pre Android M**/
 
     private fun generateAndStoreRsaKey() {
 
@@ -289,12 +237,12 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
+    /**
+     * for key encryption
+     */
     @Throws(Exception::class)
     private fun rsaEncrypt(secret: ByteArray): ByteArray {
 
-        /*val keyStore: KeyStore = KeyStore.getInstance(SecurityConstants.ANDROID_KEY_STORE)
-        keyStore.load(null)*/
 
         val privateKeyEntry = keyStore.getEntry(SecurityConstants.SAMPLE_ALIAS, null) as KeyStore.PrivateKeyEntry
 
@@ -305,12 +253,11 @@ class MainActivity : AppCompatActivity() {
         return inputCipher.doFinal(secret)
     }
 
-
+    /**
+     * for key decryption
+     */
     @Throws(Exception::class)
     private fun rsaDecrypt(encrypted: ByteArray): ByteArray {
-
-        /*val keyStore: KeyStore = KeyStore.getInstance(SecurityConstants.ANDROID_KEY_STORE)
-        keyStore.load(null)*/
 
         val privateKeyEntry = keyStore.getEntry(SecurityConstants.SAMPLE_ALIAS, null) as KeyStore.PrivateKeyEntry
         val cipher = Cipher.getInstance(SecurityConstants.RSA_MODE, "AndroidOpenSSL")
