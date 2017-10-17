@@ -59,7 +59,9 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
+    /**
+     * OnClickListener
+     */
     private val onClickListener = View.OnClickListener {
 
             view -> when(view.id) {
