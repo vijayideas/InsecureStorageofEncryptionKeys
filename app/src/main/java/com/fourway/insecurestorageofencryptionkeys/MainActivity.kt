@@ -119,6 +119,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * native function to access the from the C/C++ file
+     */
+    private external fun getNativeKey(): String
+
 
     private fun decryptText(encryptedText: String): String {
         try {
@@ -138,7 +143,7 @@ class MainActivity : AppCompatActivity() {
 
         try {
             val encryptedText = encryptor
-                    .encryptText(generateSecretKey(), plainText, FIXED_IV.toByteArray())
+                    .encryptText(getSecretKey(), plainText, FIXED_IV.toByteArray())
             return Base64.encodeToString(encryptedText, Base64.DEFAULT)
 
         } catch (e: Exception) {
@@ -151,50 +156,15 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    @Throws(NoSuchAlgorithmException::class, NoSuchProviderException::class, InvalidAlgorithmParameterException::class)
-    private fun generateSecretKey(): Key {
-
-
-        var encryptedKeyB64 = pref.getString(getString(R.string.encrypted_key), null)
-
-        if (encryptedKeyB64 == null) {
-
-            val key = ByteArray(32)
-
-            val secureRandom = SecureRandom()
-            secureRandom.nextBytes(key)
-
-
-            encryptedKeyB64 = Base64.encodeToString(key, Base64.DEFAULT)
-
-            val edit = pref.edit()
-            edit.putString(getString(R.string.encrypted_key), encryptedKeyB64)
-            edit.apply()
-        }
-
-        return getSecretKey()
-
-
-
-    }
-
-
-
-
     @Throws(NoSuchAlgorithmException::class, UnrecoverableEntryException::class, KeyStoreException::class)
     private fun getSecretKey(): SecretKey {
 
-        val encryptedKeyB64 = pref.getString(getString(R.string.encrypted_key), null)
-
-        val key = Base64.decode(encryptedKeyB64, Base64.DEFAULT)
+        val key = Base64.decode(getNativeKey(), Base64.DEFAULT)
 
 
         return SecretKeySpec(key, "AES")
 
     }
-
-
-
 
 
 
@@ -204,17 +174,12 @@ class MainActivity : AppCompatActivity() {
 
         private val FIXED_IV = "0123456789ab" //The IV you use in the encryption must be the same one you use in the decryption
 
-//        private val SECRETE_KEY = "my_secrete_keyhu"
+        init {
+            //here goes static initializer code
+            System.loadLibrary("keys")
+        }
 
     }
 
 
-
-
-    /*private fun getHardcoded() : Key {
-        val key = SECRETE_KEY.toByteArray()
-
-       *//* val key = rsaDecrypt(encryptedKey)*//*
-        return SecretKeySpec(key, "AES")
-    }*/
 }
